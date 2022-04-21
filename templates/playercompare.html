@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+{{ super() }}
+
+{% endblock %}
+
+{% block page_content %}
+{% include 'include/sidebar.html' %}
+
+<main role="main" class="container">
+        <h1>Player Similarity Score</h1>
+        <h2>{{similarity}}</h2>
+        <br>
+    <div class="row">
+        <div class="col">
+            <a href="http://localhost:8000/playerpage/{{player1.playerID}}"><h1>{{player1.name}}</h1></a>
+            <br>
+            <div class="col"><h1><img alt="Player Picture" src={{player1.photo}}></h1></div>
+            <br>
+            <h1>Rating</h1>
+            <h3>{{player1Score}}</h3>
+            <br>
+            <h5>First Name: {{player1.firstName}}</h5>
+            <h5>Last Name: {{player1.lastName}}</h5>
+            <h5>Postition: {{player1Stats.position}}</h5>
+            <br>
+            <p>Age: {{player1.age}}</p>
+            <p>Date of Birth: {{player1.birthDate}}</p>
+            <p>City of Birth: {{player1.birthPlace}}</p>
+            <p>Country of Birth: {{player1.birthCountry}}</p>
+            <p>Nationality: {{player1.nationality}}</p>
+            <p>Height: {{player1.height}}</p>
+            <p>Weight: {{player1.weight}}</p>
+            <p>Injured: {{player1.injured}}</p>
+            <br>
+            <h1>Player Stats For Season {{player1Stats.season}}</h1>
+            <br>
+            <p>Appearances: {{player1Stats.appearances}}</p>
+            <p>lineups: {{player1Stats.lineups}}</p>
+            <p>minutes: {{player1Stats.minutes}}</p>
+            <p>rating: {{player1Stats.rating}}</p>
+            <p>totalShots: {{player1Stats.totalShots}}</p>
+            <p>shotsOnTarget: {{player1Stats.shotsOnTarget}}</p>
+            <p>goals: {{player1Stats.goals}}</p>
+            <p>goalsConceded: {{player1Stats.goalsConceded}}</p>
+            <p>assists: {{player1Stats.assists}}</p>
+            <p>saves: {{player1Stats.saves}}</p>
+            <p>totalPasses: {{player1Stats.totalPasses}}</p>
+            <p>keyPasses: {{player1Stats.keyPasses}}</p>
+            <p>Pass Accuracy: {{player1Stats.passAccuracy}}</p>
+            <p>tackles: {{player1Stats.tackls}}</p>
+            <p>blocks: {{player1Stats.blocks}}</p>
+            <p>interceptions: {{player1Stats.interceptions}}</p>
+            <p>duels: {{player1Stats.duels}}</p>
+            <p>duels won: {{player1Stats.duelsWon}}</p>
+            <p>dribble attempts: {{player1Stats.dribbleAttempts}}</p>
+            <p>successful dribbles: {{player1Stats.successfulDribbles}}</p>
+            <p>fouls drawn: {{player1Stats.foulsDrawn}}</p>
+            <p>fouls committed: {{player1Stats.foulsCommitted}}</p>
+            <p>yellow cards: {{player1Stats.yellowCards}}</p>
+            <p>double yellow cards: {{player1Stats.doubleYellowCards}}</p>
+            <p>red cards: {{player1Stats.redCards}}</p>
+            <p>penalty won: {{player1Stats.penaltyWon}}</p>
+            <p>penalty commited: {{player1Stats.penaltyCommitted}}</p>
+            <p>penalty scored: {{player1Stats.penaltyScored}}</p>
+        </div>
+        <div class="col">
+            <a href="http://localhost:8000/playerpage/{{player2.playerID}}"><h1>{{player2.name}}</h1></a>
+            <br>
+            <div class="col"><h1><img alt="Player Picture" src={{player2.photo}}></h1></div>
+            <br>
+            <h1>Rating</h1>
+            <h3>{{player2Score}}</h3>
+            <br>
+            <h5>First Name: {{player2.firstName}}</h5>
+            <h5>Last Name: {{player2.lastName}}</h5>
+            <h5>Postition: {{player2Stats.position}}</h5>
+            <br>
+            <p>Age: {{player2.age}}</p>
+            <p>Date of Birth: {{player2.birthDate}}</p>
+            <p>City of Birth: {{player2.birthPlace}}</p>
+            <p>Country of Birth: {{player2.birthCountry}}</p>
+            <p>Nationality: {{player2.nationality}}</p>
+            <p>Height: {{player2.height}}</p>
+            <p>Weight: {{player2.weight}}</p>
+            <p>Injured: {{player2.injured}}</p>
+            <br>
+            <h1>Player Stats For Season {{player2Stats.season}}</h1>
+            <br>
+            <p>Appearances: {{player2Stats.appearances}}</p>
+            <p>lineups: {{player2Stats.lineups}}</p>
+            <p>minutes: {{player2Stats.minutes}}</p>
+            <p>rating: {{player2Stats.rating}}</p>
+            <p>totalShots: {{player2Stats.totalShots}}</p>
+            <p>shotsOnTarget: {{player2Stats.shotsOnTarget}}</p>
+            <p>goals: {{player2Stats.goals}}</p>
+            <p>goalsConceded: {{player2Stats.goalsConceded}}</p>
+            <p>assists: {{player2Stats.assists}}</p>
+            <p>saves: {{player2Stats.saves}}</p>
+            <p>totalPasses: {{player2Stats.totalPasses}}</p>
+            <p>keyPasses: {{player2Stats.keyPasses}}</p>
+            <p>Pass Accuracy: {{player2Stats.passAccuracy}}</p>
+            <p>tackles: {{player2Stats.tackls}}</p>
+            <p>blocks: {{player2Stats.blocks}}</p>
+            <p>interceptions: {{player2Stats.interceptions}}</p>
+            <p>duels: {{player2Stats.duels}}</p>
+            <p>duels won: {{player2Stats.duelsWon}}</p>
+            <p>dribble attempts: {{player2Stats.dribbleAttempts}}</p>
+            <p>successful dribbles: {{player2Stats.successfulDribbles}}</p>
+            <p>fouls drawn: {{player2Stats.foulsDrawn}}</p>
+            <p>fouls committed: {{player2Stats.foulsCommitted}}</p>
+            <p>yellow cards: {{player2Stats.yellowCards}}</p>
+            <p>double yellow cards: {{player2Stats.doubleYellowCards}}</p>
+            <p>red cards: {{player2Stats.redCards}}</p>
+            <p>penalty won: {{player2Stats.penaltyWon}}</p>
+            <p>penalty commited: {{player2Stats.penaltyCommitted}}</p>
+            <p>penalty scored: {{player2Stats.penaltyScored}}</p>
+        </div>
+    </div>
+    <br><br>
+
+    <br><br><br><br>
+
+</main><!-- /.container -->
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+
+{% endblock %}

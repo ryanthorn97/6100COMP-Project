@@ -15,6 +15,22 @@
             <h1>Home Page</h1>
         </div>
     </div>
+    {% for player in players %}
+		<div class="col-md-4 mr-auto">	
+            <a href="http://localhost:8000/playerpage/{{player.playerID}}">{{player.name}}</a>
+			{% if loop.index % 3 %}
+				<br>
+			{% endif %}
+		</div>
+	{% endfor %}
+    {% for player in similarPlayers %}
+		<div class="col-md-4 mr-auto">	
+            <a href="http://localhost:8000/playerpage/{{player[0].playerID}}">{{player[0].name}}</a>
+			{% if loop.index % 3 %}
+				<br>
+			{% endif %}
+		</div>
+	{% endfor %}
 </main><!-- /.container -->
 
 {% endblock %}

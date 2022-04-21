@@ -11,11 +11,69 @@
 
 <main role="main" class="container">
     <div class="row">
+        <div class="col"><h1>{{data.name}}</h1></div>
+        <div class="col"><h1><img alt="Player Picture" src={{data.photo}}></h1></div>
         <div class="col">
-            <h1>Player</h1>
-            {{data.0.team.name}}
+            <h1>Rating</h1>
+            <h3>{{score}}</h3>
+        </div>
+    </div>
+    <br><br>
+    <form class="d-flex" action="/compareplayers">
+        <input class="form-control me-2" id="autocomplete" name="query" type="search" placeholder="Compare" aria-label="Compare">
+        <input type="hidden" name="player_id" value="{{data.playerID}}" />
+        <button class="btn btn-outline-success" type="submit">Compare Player</button>
+      </form>   
+    <a href="http://localhost:8000/similarplayers/{{data.playerID}}"><button type="button" class="btn btn-info">Find Similar Players</button></a>
+
+    <br><br><br><br>
+    <div class="row">
+        <div class="col">
             <br>
-            {{data.0.players.0.name}}
+            <h5>First Name: {{data.firstName}}</h5>
+            <h5>Last Name: {{data.lastName}}</h5>
+            <h5>Postition: {{stats.position}}</h5>
+            <br>
+            <p>Age: {{data.age}}</p>
+            <p>Date of Birth: {{data.birthDate}}</p>
+            <p>City of Birth: {{data.birthPlace}}</p>
+            <p>Country of Birth: {{data.birthCountry}}</p>
+            <p>Nationality: {{data.nationality}}</p>
+            <p>Height: {{data.height}}</p>
+            <p>Weight: {{data.weight}}</p>
+            <p>Injured: {{data.injured}}</p>
+        </div>
+        <div class="col">
+            <h1>Player Stats For Season {{stats.season}}</h1>
+            <br>
+            <p>Appearances: {{stats.appearances}}</p>
+            <p>lineups: {{stats.lineups}}</p>
+            <p>minutes: {{stats.minutes}}</p>
+            <p>rating: {{stats.rating}}</p>
+            <p>totalShots: {{stats.totalShots}}</p>
+            <p>shotsOnTarget: {{stats.shotsOnTarget}}</p>
+            <p>goals: {{stats.goals}}</p>
+            <p>goalsConceded: {{stats.goalsConceded}}</p>
+            <p>assists: {{stats.assists}}</p>
+            <p>saves: {{stats.saves}}</p>
+            <p>totalPasses: {{stats.totalPasses}}</p>
+            <p>keyPasses: {{stats.keyPasses}}</p>
+            <p>Pass Accuracy: {{stats.passAccuracy}}</p>
+            <p>tackles: {{stats.tackls}}</p>
+            <p>blocks: {{stats.blocks}}</p>
+            <p>interceptions: {{stats.interceptions}}</p>
+            <p>duels: {{stats.duels}}</p>
+            <p>duels won: {{stats.duelsWon}}</p>
+            <p>dribble attempts: {{stats.dribbleAttempts}}</p>
+            <p>successful dribbles: {{stats.successfulDribbles}}</p>
+            <p>fouls drawn: {{stats.foulsDrawn}}</p>
+            <p>fouls committed: {{stats.foulsCommitted}}</p>
+            <p>yellow cards: {{stats.yellowCards}}</p>
+            <p>double yellow cards: {{stats.doubleYellowCards}}</p>
+            <p>red cards: {{stats.redCards}}</p>
+            <p>penalty won: {{stats.penaltyWon}}</p>
+            <p>penalty commited: {{stats.penaltyCommitted}}</p>
+            <p>penalty scored: {{stats.penaltyScored}}</p>
         </div>
     </div>
 </main><!-- /.container -->

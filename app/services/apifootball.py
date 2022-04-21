@@ -7,10 +7,10 @@ headers = {
         'x-rapidapi-key': "7f3f43fa12159287758ccaa19595ed77"
         }
 
-async def getPlayerSquads(playerId):
+def getPlayerSquads(teamId):
 
     endpoint = "players/squads"
-    querystring = {"player":playerId}
+    querystring = {"team":teamId}
 
     response = requests.request("GET", url + endpoint, headers=headers, params=querystring)
 
@@ -20,7 +20,7 @@ async def getPlayerSquads(playerId):
 
 
 
-async def getPlayerStatsBySeason(playerId, season):
+def getPlayerStatsBySeason(playerId, season):
 
     endpoint = "players"
     querystring = {"id":playerId,"season":season}
@@ -32,7 +32,7 @@ async def getPlayerStatsBySeason(playerId, season):
     return player['response']
 
 
-async def getAllPlayerStatsInLeagueBySeason(leagueId, season, page):
+def getAllPlayerStatsInLeagueBySeason(leagueId, season, page):
 
     endpoint = "players"
     querystring = {"league":leagueId,"season":season, "page":page}
@@ -44,7 +44,7 @@ async def getAllPlayerStatsInLeagueBySeason(leagueId, season, page):
     return players['response']
 
 
-async def getAllPlayerStatsInTeamBySeason(teamId, season, page):
+def getAllPlayerStatsInTeamBySeason(teamId, season, page):
 
     endpoint = "players"
     querystring = {"team":teamId,"season":season, "page":page}
@@ -54,3 +54,15 @@ async def getAllPlayerStatsInTeamBySeason(teamId, season, page):
     players = response.json()
 
     return players['response']
+
+def getLeagueStandings(leagueId, season):
+
+    endpoint = "standings"
+    querystring = {"league":leagueId,"season":season}
+
+    response = requests.request("GET", url + endpoint, headers=headers, params=querystring)
+
+    players = response.json()
+
+    return players['response']
+

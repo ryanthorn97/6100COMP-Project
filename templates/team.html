@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+{{ super() }}
+
+{% endblock %}
+
+{% block page_content %}
+{% include 'include/sidebar.html' %}
+
+<main role="main" class="container">
+    <div class="row">
+        <div class="col">
+            <h1>{{data.name}}</h1>
+        </div>
+        <div class="col"><h1><img alt="Player Picture" src={{data.logo}}></h1></div>
+        <div class="col">
+            <h1>Rating</h1>
+            <h3>{{teamScore}}</h3>
+        </div>
+    </div>
+    <br><br>
+    <div class="row">
+        <div class="col">
+            <h1>Weakest Position</h1>
+            <h3>{{weakestArea}}</h3>
+        </div>
+    </div>
+    <br><br><br><br>
+    <div class="row">
+        <div class="col">
+            <h3>Players</h3>
+            {% for player in players %}
+                <div class="col">	
+                    <a href="http://localhost:8000/playerpage/{{player[0].playerID}}">{{player[0].name}}</a>
+                    {% if loop.index % 3 %}
+                        <br>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <br><br><br><br>
+</main><!-- /.container -->
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+
+{% endblock %}

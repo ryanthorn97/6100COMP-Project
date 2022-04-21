@@ -25,3 +25,38 @@ def openfile(filename):
         "text": html
     }
     return data
+
+
+def common_data(list1, list2):
+    result = False
+  
+    # traverse in the 1st list
+    for x in list1:
+  
+        # traverse in the 2nd list
+        for y in list2:
+    
+            # if one common
+            if x == y:
+                result = True
+                return result 
+                  
+    return result
+
+def flattenList(list):
+
+    list = [r[0] for r in list]
+    return list
+
+def calcStatPerc(stat, list):
+    avgStat = sum(list) / len(list)
+
+    if stat > avgStat:
+        statPerc = 100
+    else:
+        statPerc = (stat/avgStat)*100
+    return statPerc
+
+def num_sim(n1, n2):
+  """ calculates a similarity score between 2 numbers """
+  return 1 - abs(n1 - n2) / (n1 + n2)
