@@ -31,6 +31,7 @@ class Team(Base):
     logo = Column(String, nullable=True)
 
     competitions = relationship("Competitionstanding", back_populates="team")
+    teamstats = relationship("Teamstats", back_populates="team")
 
 class Competition(Base):
     __tablename__ = "competition"
@@ -110,54 +111,53 @@ class Playerstats(Base):
     team = relationship("Team", foreign_keys=[teamID])
     competition = relationship("Competition", foreign_keys=[competitionID])
 
-    
+class Teamstats(Base):
+    __tablename__ = "teamstats"
 
-    
-    
+    teamStatsID = Column(Integer, primary_key=True)
+    teamID = Column(Integer, ForeignKey('team.teamID'))
+    competitionID = Column(Integer, ForeignKey('competition.competitionID'))
+    season = Column(Integer)
+    avgGoalsAgAway = Column(Integer)
+    avgGoalsAgHome = Column(Integer)
+    avgGoalsAgTotal = Column(Integer)
+    avgGoalsForAway = Column(Integer)
+    avgGoalsForHome = Column(Integer)
+    avgGoalsForTotal = Column(String)
+    biggestGoalsForHome = Column(Integer)
+    biggestGoalsForAway = Column(Integer)
+    biggestGoalsAgHome = Column(Integer)
+    biggestGoalsAgAway = Column(Integer)
+    biggestLossAway = Column(String)
+    biggestLossHome = Column(String)
+    biggestDrawStreak = Column(Integer)
+    biggestWinStreak = Column(Integer)
+    biggestLoseStreak = Column(Integer)
+    biggestWinAway = Column(String)
+    biggestWinHome = Column(String)
+    yellowCards = Column(Integer)
+    redCards = Column(Integer)
+    homeCleanSheet = Column(Integer)
+    awayCleanSheet = Column(Integer)
+    totalCleanSheet = Column(Integer)
+    failedToScoreAway = Column(Integer)
+    failedToScoreHome = Column(Integer)
+    totalFailedToScore = Column(Integer)
+    drawsHome = Column(Integer)
+    drawsAway = Column(Integer)
+    drawsTotal = Column(Integer)
+    lossHome = Column(Integer)
+    lossAway = Column(Integer)
+    lossTotal = Column(Integer)
+    playedHome = Column(Integer)
+    playedAway = Column(Integer)
+    playedTotal = Column(Integer)
+    winsAway = Column(Integer)
+    winsHome = Column(Integer)
+    winsTotal = Column(Integer)
+    penaltyMissedPerc = Column(String)
+    penaltyMissedTotal = Column(Integer)
+    penaltyScoredPerc = Column(String)
+    penaltyScoredTotal = Column(Integer)    
 
-    
-
-
-#player = Table(
-    #'player', meta,
-    #Column('playerID', Integer, primary_key=True),
-    #Column('name', String(45)),
-    #Column('firstName', String(45)),
-    #Column('lastName', String(45)),
-    #Column('age', Integer),
-    #Column('birthDate', Date),
-    #Column('birthPlace', String(45)),
-    #Column('birthCountry', String(45)),
-    #Column('nationality', String(45)),
-    #Column('height', String(45)),
-    #Column('weight', String(45)),
-    #Column('injured', Boolean),
-    #Column('photo', String(45)),
-#)
-
-#team = Table(
-    #'team', meta,
-    #Column('teamID', Integer, primary_key=True),
-    #Column('name', String(45)),
-    #Column('logo', String(45)),
-#)
-
-#competition = Table(
-    #'competition', meta,
-    #Column('competitionID', Integer, primary_key=True),
-    #Column('name', String(45)),
-    #Column('country', String(45)),
-    #Column('logo', String(45)),
-    #Column('flag', String(45)),
-    #Column('season', Integer),
-#)
-
-#competitionstanding = Table(
-    #'competitionstanding', meta,
-    #Column('competitionID', Integer, primary_key=True),
-    #Column('name', String(45)),
-    #Column('country', String(45)),
-    #Column('logo', String(45)),
-    #Column('flag', String(45)),
-    #Column('season', Integer),
-#)
+    team = relationship("Team", back_populates="teamstats")

@@ -15,22 +15,17 @@
             <h1>Home Page</h1>
         </div>
     </div>
-    {% for player in players %}
-		<div class="col-md-4 mr-auto">	
-            <a href="http://localhost:8000/playerpage/{{player.playerID}}">{{player.name}}</a>
-			{% if loop.index % 3 %}
-				<br>
-			{% endif %}
-		</div>
-	{% endfor %}
-    {% for player in similarPlayers %}
-		<div class="col-md-4 mr-auto">	
-            <a href="http://localhost:8000/playerpage/{{player[0].playerID}}">{{player[0].name}}</a>
-			{% if loop.index % 3 %}
-				<br>
-			{% endif %}
-		</div>
-	{% endfor %}
+	<div class="row">
+        <div class="col">
+            <h3>Welcom to the dream website for football stats!</h3>
+        </div>
+    </div>
+	<div class="row">
+        <div class="col">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at elit viverra, consectetur sem venenatis, lacinia ex. Sed imperdiet condimentum arcu, nec dignissim lectus egestas et. Nam imperdiet bibendum leo, non vulputate ante malesuada nec. Ut tempus sit amet tortor a dapibus. Sed ut elementum nunc. Aenean bibendum eu nunc et faucibus. Etiam dignissim tincidunt nisi vitae vestibulum. Vivamus efficitur, turpis elementum hendrerit mollis, dui neque cursus orci, non gravida metus tellus a nisl. Fusce vel sem et ligula ultricies faucibus. Morbi eu mi id neque scelerisque finibus. Maecenas a urna quis enim hendrerit mattis. Morbi sed dolor ornare, rhoncus quam et, tempor mi. Mauris consectetur neque eu ex ornare, ut finibus mi vestibulum. In scelerisque accumsan vehicula.</p>
+        </div>
+    </div>
+
 </main><!-- /.container -->
 
 {% endblock %}

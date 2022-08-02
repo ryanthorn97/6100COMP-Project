@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+{{ super() }}
+
+{% endblock %}
+
+{% block page_content %}
+{% include 'include/sidebar.html' %}
+
+<main role="main" class="container">
+        <h1>Team Similarity Score</h1>
+        <h2>{{similarity}}</h2>
+        <br><br>
+        <a href="http://localhost:8000/compareteams?query={{team1.teamID}}&team_id={{team2.teamID}}"><button type="button" class="btn btn-info">Swap Home and Away Team</button></a>
+        <br><br>
+    <div class="row">
+        <div class="col">
+            <a href="http://localhost:8000/teampage/?team_id={{team1.teamID}}"><h1>{{team1.name}}</h1></a>
+            <br>
+            <h1>Home Team Win Chance</h1>
+            <h3>{{homeTeamWin}}%</h3>
+            <br>
+            <div class="col"><h1><img alt="Team Picture" src={{team1.logo}}></h1></div>
+            <br>
+            <h1>Rating</h1>
+            <h3>{{team1Score}}</h3>
+            <br>
+            <br>
+        </div>
+        <div class="col">
+            <a href="http://localhost:8000/teampage/?team_id={{team2.teamID}}"><h1>{{team2.name}}</h1></a>
+            <br>
+            <h1>Away Team Win Chance</h1>
+            <h3>{{awayTeamWin}}%</h3>
+            <br>
+            <div class="col"><h1><img alt="Team Picture" src={{team2.logo}}></h1></div>
+            <br>
+            <h1>Rating</h1>
+            <h3>{{team2Score}}</h3>
+            <br>
+            <br>
+        </div>
+    </div>
+    <br><br>
+
+    <br><br><br><br>
+
+</main><!-- /.container -->
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+
+{% endblock %}

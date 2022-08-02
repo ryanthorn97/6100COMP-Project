@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{{data.name}}{% endblock %}
+{% block head %}
+{{ super() }}
+
+{% endblock %}
+
+{% block page_content %}
+{% include 'include/sidebar.html' %}
+
+<main role="main" class="container">
+    <div class="row">
+        <div class="col"><h1>{{data.name}}</h1></div>
+        <div class="col"><h1><img alt="League Picture" width="70%" src={{data.flag}}></h1></div>
+        <div class="col"><h1>{{data.country}}</h1></div>
+    </div>
+    <br><br><br>
+
+        {% for team in standings %}
+		<div class="row">	
+            <a href="http://localhost:8000/teampage/?team_id={{team[1].teamID}}">Postion {{team[0].rank}}       -       {{team[0].points}} Points        -       {{team[1].name}}        -       {{team[0].description}} </a>
+            <br><br>
+		</div>
+	    {% endfor %}
+
+</main><!-- /.container -->
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+
+{% endblock %}

@@ -36,6 +36,13 @@ def read_player_stats(player_id: int, db: Session = Depends(get_db), season : Op
         raise HTTPException(status_code=404, detail="Player stats not found for season " + str(season))
     return db_player
 
+@router.get("/players/team/{player_id}", response_model=schemas.Team)
+def read_player_team(player_id: int, db: Session = Depends(get_db), season : Optional[int] = 2021):
+    db_player = crud.get_players_team(db, player_id, season)
+    if db_player is None:
+        raise HTTPException(status_code=404, detail="Player team not found for season " + str(season))
+    return db_player
+
 @router.post("/players/", response_model=schemas.Player)
 def create_player(player: schemas.Player, db: Session = Depends(get_db)):
     db_player = crud.get_player(db, player.playerID)
@@ -47,12 +54,7 @@ def create_player(player: schemas.Player, db: Session = Depends(get_db)):
 
 @router.get("/apiplayers/{player_id}")
 def get_api_player(player_id: int, season : Optional[int] = 2021):
-    #squads = getPlayerSquads(player_id)
     stats = getPlayerStatsBySeason(player_id, season)
-    #print(stats[0].statistics[0].league.name)
-    #data = stats[0]
-    #print(data)
-    #return data
     if len(stats)==0:
         return False
     return stats[0]
@@ -66,18 +68,15 @@ def get_api_player_squads(team_id: int):
         return False
     return squads[0]
 
-def getAllPlayerIDs():
+def addAllPlayersDB():
     db = SessionLocal()
 
     teamIDs = db.query(models.Team.teamID).all()
     teamIDs = [r[0] for r in teamIDs]
 
-    #print(teamIDs)
-
     playerIDs = []
  
     for x in teamIDs:
-        #if get_api_player_squads(x) != False:
         squadData = get_api_player_squads(x)
 
         if squadData != False:
@@ -85,13 +84,8 @@ def getAllPlayerIDs():
             squadData = squadData["players"]
             for IDs in squadData:
                 playerIDs.append(IDs["id"])
-                #print(IDs["id"])
-
-    print(len(playerIDs))
 
     for x in playerIDs:
-        #if get_api_player(x) != False:
-           # print(get_api_player(x))
         data = get_api_player(x)
 
         if data != False:
@@ -124,8 +118,6 @@ def getAllPlayerIDs():
                     
             db.close()
 
-    #return playerIDs
-
 
 
 @router.get("/players/league/{league_id}")
@@ -139,31 +131,34 @@ def get_players_stats_by_team(team_id: int, season: int, page: int):
     return data
 
 
-@router.get("/playerpage/{player_id}", response_class=HTMLResponse)
-def player_page(request: Request, player_id: int, db: Session = Depends(get_db)):
+@router.get("/playerpage/", response_class=HTMLResponse)
+def player_page(request: Request, player_id: int, season : Optional[int] = 2021, db: Session = Depends(get_db)):
     data =  read_player(player_id, db)
-    stats = read_player_stats(player_id, db)
+    stats = read_player_stats(player_id, db, season)
+    team = read_player_team(player_id, db, season)
     if stats.position == "Attacker":   
-        score = algorithms.playerAttackScore(db, 2021, stats)
+        score = algorithms.playerAttackScore(db, season, stats)
     elif stats.position == "Midfielder":
-        score = algorithms.playerAttackScore(db, 2021, stats)
+        score = algorithms.playerAttackScore(db, season, stats)
     elif stats.position == "Defender":
-        score = algorithms.playerDefenceScore(db, 2021, stats)
+        score = algorithms.playerDefenceScore(db, season, stats)
     elif stats.position == "Goalkeeper":
-        score = algorithms.playerGKScore(db, 2021, stats)
-    #title = data["name"]
-    return templates.TemplateResponse("player.html", {"request": request, "data": data, 'stats': stats, 'score': score})
+        score = algorithms.playerGKScore(db, season, stats)
+    
+    value = algorithms.estimatePlayerValue(db, season, data, stats, score)
+
+    return templates.TemplateResponse("player.html", {"request": request, "data": data, 'stats': stats, 'team': team, 'score': score, "value" : value})
 
 @router.get("/searchplayers")
 def search_players(request: Request, query: Optional[str], db: Session = Depends(get_db)):
     players = db.query(models.Player).filter(models.Player.name.contains(query)).all()
     #return players
     return templates.TemplateResponse(
-        "index.html", {"request": request, "players": players}
+        "search.html", {"request": request, "players": players}
     )
 
 @router.get("/compareplayers")
-def compare_players(request: Request, query: str, player_id: int, db: Session = Depends(get_db)):
+def compare_players(request: Request, query: int, player_id: int, db: Session = Depends(get_db)):
     player1 = read_player(player_id, db)
     player2 = read_player(query, db)
     player1Stats = read_player_stats(player_id, db)
@@ -175,23 +170,20 @@ def compare_players(request: Request, query: str, player_id: int, db: Session = 
     player2Score = scores["player2Score"]
     similarity = scores["similarity"]
 
-    #params = request.query_params
     if player2 is None or player1 is None:
         raise HTTPException(status_code=404, detail="Player not found")
-    #print(params)
-    #return players
+
     return templates.TemplateResponse(
-        "playercompare.html", {"request": request, "player1": player1, "player1Stats": player1Stats, "player1Score": player1Score, "player2": player2, "player2Stats": player2Stats, "player2Score": player2Score, "similarity": similarity}
+        "playercompare.html", {"request": request, "player1": player1, "player1Stats": player1Stats,
+         "player1Score": player1Score, "player2": player2, "player2Stats": player2Stats,
+          "player2Score": player2Score, "similarity": similarity}
     )
 
 @router.get("/similarplayers/{player_id}")
-def similar_players(request: Request, player_id: int, db: Session = Depends(get_db)):
-    #data =  read_player(player_id, db)
+def similar_players(request: Request, player_id: int, season : Optional[int] = 2021, db: Session = Depends(get_db)):
     stats = read_player_stats(player_id, db)
-    similarPlayers = algorithms.findSimilarPlayers(db, season=2021, stats=stats)
+    similarPlayers = algorithms.findSimilarPlayers(db, season, stats)
 
-    #players = db.query(models.Player, models.Playerstats).join(models.Playerstats).filter(models.Playerstats.position.contains(query)).all()
-    #return players
     return templates.TemplateResponse(
-        "index.html", {"request": request, "similarPlayers": similarPlayers}
+        "search.html", {"request": request, "similarPlayers": similarPlayers}
     )

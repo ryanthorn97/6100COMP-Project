@@ -7,7 +7,8 @@ def get_player(db: Session, player_id: int):
     return db.query(models.Player).filter(models.Player.playerID == player_id).first()
 
 def get_player_stats(db: Session, player_id: int, season: int):
-    results = db.query(models.Player, models.Playerstats).join(models.Playerstats).filter(models.Player.playerID == player_id, models.Playerstats.season == season).first()
+    results = db.query(models.Player, models.Playerstats).join(models.Playerstats).filter(models.Player.playerID == player_id,
+     models.Playerstats.season == season).first()
 
     if results is None:
         return None
@@ -26,6 +27,14 @@ def create_player(db: Session, player: schemas.Player):
 def get_team(db: Session, team_id: int):
     return db.query(models.Team).filter(models.Team.teamID == team_id).first()
 
+def get_team_stats(db: Session, team_id: int, season: int):
+    results = db.query(models.Team, models.Teamstats).join(models.Teamstats).filter(models.Team.teamID == team_id,
+     models.Teamstats.season == season).first()
+
+    if results is None:
+        return None
+    return results[1]
+
 def create_team(db: Session, team: schemas.Team):
     db_team = models.Team(teamID = team.teamID, name = team.name, logo = team.logo)
     db.add(db_team)
@@ -36,8 +45,11 @@ def create_team(db: Session, team: schemas.Team):
 def get_competition(db: Session, competition_id: int):
     return db.query(models.Competition).filter(models.Competition.competitionID == competition_id).first()
 
-def get_competitionStandings(db: Session, competition_id: int, team_id : int, season : int):
-    return db.query(models.Competitionstanding).filter(models.Competitionstanding.competitionID == competition_id, models.Competitionstanding.teamID == team_id, models.Competitionstanding.season == season).first()
+def get_competitionStandings(db: Session, competition_id: int, season : int):
+    
+    results = db.query(models.Competitionstanding, models.Team).join(models.Team).filter(models.Competitionstanding.competitionID == competition_id, models.Competitionstanding.season == season).order_by(models.Competitionstanding.rank.asc()).all()
+    #print(results)
+    return results
 
 def get_top_scorer(db: Session, season: int):
     results = db.query(func.max(models.Playerstats.goals)).filter(models.Playerstats.season == season).first()
@@ -87,8 +99,9 @@ def get_similar_players_attacker(db: Session, season: int, playerID : int, posit
         succesfulDribblesLowLimit : int,
         succesfulDribblesHighLimit : int):
     results = db.query(models.Player, models.Playerstats).join(models.Playerstats).filter(models.Playerstats.totalShots.between(totalShotsLowLimit, totalShotsHighLimit), models.Playerstats.shotsOnTarget.between(shotsOnTargetLowLimit, shotsOnTargetHighLimit),
-    models.Playerstats.assists.between(assistLowLimit, assistHighLimit), models.Playerstats.goals.between(goalsLowLimit, goalsHighLimit), models.Playerstats.successfulDribbles.between(succesfulDribblesLowLimit, succesfulDribblesHighLimit), models.Player.playerID != playerID, models.Playerstats.season == season,
+    models.Playerstats.assists.between(assistLowLimit, assistHighLimit), models.Playerstats.goals.between(goalsLowLimit, goalsHighLimit), models.Playerstats.successfulDribbles.between(succesfulDribblesLowLimit, succesfulDribblesHighLimit), models.Playerstats.playerID != playerID, models.Playerstats.season == season,
     models.Playerstats.position == position).all()
+
     return results
 
 def get_similar_players_midfielder(db: Session, season: int, playerID : int, position : str,
@@ -109,12 +122,41 @@ def get_similar_players_midfielder(db: Session, season: int, playerID : int, pos
     models.Playerstats.position == position, models.Playerstats.totalPasses.between(totalPassesLowLimit, totalPasesHighLimit)).all()
     return results
 
+def get_similar_players_defender(db: Session, season: int, playerID : int, position : str,
+        tacklesLowLimit : int,
+        tacklesHighLimit : int,
+        interceptionsLowLimit : int,
+        interceptionsHighLimit : int,
+        duelsWonLowLimit : int,
+        duelsWonHighLimit : int,
+        blocksLowLimit : int,
+        blocksHighLimit : int):
+    results = db.query(models.Player, models.Playerstats).join(models.Playerstats).filter(models.Playerstats.tackles.between(tacklesLowLimit, tacklesHighLimit), models.Playerstats.interceptions.between(interceptionsLowLimit, interceptionsHighLimit),
+    models.Playerstats.duelsWon.between(duelsWonLowLimit, duelsWonHighLimit), models.Playerstats.blocks.between(blocksLowLimit, blocksHighLimit), models.Player.playerID != playerID, models.Playerstats.season == season, models.Playerstats.position == position).all()
+    return results
+
+def get_similar_players_goalkeeper(db: Session, season: int, playerID : int, position : str,
+        goalsConcededLowLimit : int,
+        goalsConcededHighLimit : int,
+        savesLowLimit : int,
+        savesHighLimit : int):
+    results = db.query(models.Player, models.Playerstats).join(models.Playerstats).filter(models.Playerstats.goalsConceded.between(goalsConcededLowLimit, goalsConcededHighLimit), models.Playerstats.saves.between(savesLowLimit, savesHighLimit), 
+    models.Player.playerID != playerID, models.Playerstats.season == season, models.Playerstats.position == position).all()
+    return results
+
 
 def get_all_team_players(db: Session, team_id: int, season: int):
-    results = db.query(models.Player, models.Playerstats, models.Team).select_from(models.Player).join(models.Playerstats).join(models.Team).filter(models.Team.teamID == team_id, models.Playerstats.season == season).all()
-
-    #playerList = []
-    #for x in results:
-       # playerList.append(x[1])
+    results = db.query(models.Player, models.Playerstats, 
+    models.Team).select_from(models.Player).join(models.Playerstats).join(models.Team).filter(models.Team.teamID == team_id, 
+    models.Playerstats.season == season).all()
     
     return results
+
+def get_players_team(db: Session, player_id: int, season: int):
+    results = db.query(models.Player, models.Playerstats, 
+    models.Team).select_from(models.Player).join(models.Playerstats).join(models.Team).filter(models.Player.playerID == player_id, 
+    models.Playerstats.season == season).first()
+
+    
+    return results[2]
+

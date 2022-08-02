@@ -1,12 +1,8 @@
-from audioop import avg
-from lib2to3.pgen2 import pgen
 import math
-from weakref import WeakSet
 
 from sqlalchemy.orm import Session
 from app.db import crud, schemas
 
-from app.db.db import SessionLocal
 from app.library import helpers
 
 def teamWinChance(homeTeamQuality, AwayTeamQuality):
@@ -15,8 +11,10 @@ def teamWinChance(homeTeamQuality, AwayTeamQuality):
     randomnessIndicator = 0.23
     qualityDifference = homeTeamQuality - AwayTeamQuality
 
-    score = 1 - math.exp(-((qualityDifference + homeAdvantage) / randomnessIndicator))
-    return 0
+    score = (1 + math.exp(-((qualityDifference + homeAdvantage) / randomnessIndicator))) ** -1
+    score = score * 100
+    score = round(score, 1)
+    return score
 
 def playerDefenceScore(db: Session, season: int, stats: schemas.Playerstats):
     topTackleList = []
@@ -64,7 +62,10 @@ def playerDefenceScore(db: Session, season: int, stats: schemas.Playerstats):
 
     rating = stats.rating * 10
     passAccuracy = stats.passAccuracy
-    duelsWonRatio = (stats.duelsWon/stats.duels) * 100
+    if stats.duels != 0:
+        duelsWonRatio = (stats.duelsWon/stats.duels) * 100
+    else:
+        duelsWonRatio = 0
     
     allStatsList.extend((rating, passAccuracy, duelsWonRatio))
 
@@ -76,7 +77,6 @@ def playerDefenceScore(db: Session, season: int, stats: schemas.Playerstats):
         allStatsList[x] = allStatsList[x] * weights[x] / sum(weights)
     finalDefenceScore = sum(allStatsList)
 
-    print(finalDefenceScore)
 
     #print(goalsPerc, assistPerc, foulsDrawnPerc, penWonPerc)
     return round(finalDefenceScore, 1)
@@ -141,9 +141,6 @@ def playerAttackScore(db: Session, season: int, stats: schemas.Playerstats):
         allStatsList[x] = allStatsList[x] * weights[x] / sum(weights)
     finalAttackScore = sum(allStatsList)
 
-    #print(finalAttackScore)
-
-    #print(goalsPerc, assistPerc, foulsDrawnPerc, penWonPerc)
     return round(finalAttackScore, 1)
 
 def playerGKScore():
@@ -195,7 +192,6 @@ def teamScore(db: Session, season: int, playerList : list):
         avgGKScores = 0
     avgScores["Goalkeepers"] = avgGKScores
 
-    #avgScores.extend((avgAttackScore, avgMidfieldScores, avgDefenceScores, avgGKScores))
     weakestArea = min(avgScores, key=avgScores.get)
 
     if (len(attackScores) + len(midfieldScores) + len(defenceScores) + len(gkScores) != 0):
@@ -206,10 +202,6 @@ def teamScore(db: Session, season: int, playerList : list):
 
     scoreDetails = {"teamScore" : teamScore, "weakestArea" : weakestArea} 
 
-    #print(playerStatsList)
-    print(avgScores["Forwards"], avgScores["Midfielders"], avgScores["Defenders"], avgScores["Goalkeepers"])
-    print(teamScore)
-    print(weakestArea)
     return scoreDetails
 
 def comparePlayerStats(db: Session, season : int, player1Stats: schemas.Playerstats, player2Stats: schemas.Playerstats):
@@ -239,11 +231,40 @@ def comparePlayerStats(db: Session, season : int, player1Stats: schemas.Playerst
 
     return scores
 
-def compareTeamStats():
-    return 0
+def compareTeamStats(db : Session, season : int, playerList1 : list, playerList2 : list):
+    team1ScoreDetails = teamScore(db, season, playerList1)
+    team2ScoreDetails = teamScore(db, season, playerList2)
 
-def estimatePlayerValue():
-    return 0
+    team1Score = team1ScoreDetails["teamScore"]
+    team2Score = team2ScoreDetails["teamScore"]
+    team1Weakness = team1ScoreDetails["weakestArea"]
+    team2Weakness = team2ScoreDetails["weakestArea"]
+
+
+    similarity = round(helpers.num_sim(team1Score, team2Score), 2) *100
+
+    scores = {"team1Score" : team1Score, "team2Score" : team2Score, "team1Weakness" : team1Weakness, "team2Weakness" : team2Weakness, "similarity" : similarity}
+    
+    return scores
+
+def estimatePlayerValue(db: Session, season: int, data: schemas.Player, stats: schemas.Playerstats, score : float):
+    lastSeasonStats = crud.get_player_stats(db, stats.playerID, season - 1)
+
+    if lastSeasonStats is None:
+        return "Not enough data to calculate"
+    else:
+        lastSesonMins = lastSeasonStats.minutes
+    scoreModifier =  (1.3 * score) ** 2
+    ageModifier = 32/data.age
+    height = data.height
+    heightString = height[:-2]
+    height = int(heightString)
+    height = height / 100
+
+    value = scoreModifier * lastSesonMins * ageModifier * height
+    value = round(value, -4)
+
+    return value
 
 def findSimilarPlayers(db: Session, season: int, stats: schemas.Playerstats):
     if stats.position == "Attacker":
@@ -258,7 +279,14 @@ def findSimilarPlayers(db: Session, season: int, stats: schemas.Playerstats):
         succesfulDribblesLowLimit = round(stats.successfulDribbles * 0.8)
         succesfulDribblesHighLimit = round(stats.successfulDribbles * 1.2)
 
-        similarPlayers = crud.get_similar_players_attacker(db, season, stats.playerID, stats.position, totalShotsLowLimit, totalShotsHighLimit, shotsOnTargetLowLimit, shotsOnTargetHighLimit, assistLowLimit, assistHighLimit, goalsLowLimit, goalsHighLimit, succesfulDribblesLowLimit, succesfulDribblesHighLimit)
+        print (totalShotsLowLimit, totalShotsHighLimit)
+        print (shotsOnTargetLowLimit, shotsOnTargetHighLimit)
+        print (assistLowLimit, assistHighLimit)
+        print (goalsLowLimit, goalsHighLimit)
+        print (succesfulDribblesLowLimit, succesfulDribblesHighLimit)
+
+        similarPlayers = crud.get_similar_players_attacker(db, season, stats.playerID, stats.position, totalShotsLowLimit, totalShotsHighLimit, 
+        shotsOnTargetLowLimit, shotsOnTargetHighLimit, assistLowLimit, assistHighLimit, goalsLowLimit, goalsHighLimit, succesfulDribblesLowLimit, succesfulDribblesHighLimit)
  
         if len(similarPlayers) == 0:
             return "no similar players available"
@@ -266,9 +294,7 @@ def findSimilarPlayers(db: Session, season: int, stats: schemas.Playerstats):
 
         for player, playerStats in similarPlayers:
             print(player.name, playerStats.position)
-        #print(similarPlayers[0][0].name)
         return similarPlayers
-        #score = playerAttackScore()
 
     elif stats.position == "Midfielder":
         passAccuracyLowLimit = round(stats.passAccuracy * 0.8)
@@ -284,7 +310,8 @@ def findSimilarPlayers(db: Session, season: int, stats: schemas.Playerstats):
         totalPassesLowLimit = round(stats.totalPasses * 0.8)
         totalPassesHighLimit = round(stats.totalPasses * 1.2)
 
-        similarPlayers = crud.get_similar_players_midfielder(db, season, stats.playerID, stats.position, passAccuracyLowLimit, passAcuracyHighLimit, shotsOnTargetLowLimit, shotsOnTargetHighLimit, assistLowLimit, assistHighLimit, goalsLowLimit, goalsHighLimit, succesfulDribblesLowLimit, succesfulDribblesHighLimit, totalPassesLowLimit, totalPassesHighLimit)
+        similarPlayers = crud.get_similar_players_midfielder(db, season, stats.playerID, stats.position, passAccuracyLowLimit, passAcuracyHighLimit, 
+        shotsOnTargetLowLimit, shotsOnTargetHighLimit, assistLowLimit, assistHighLimit, goalsLowLimit, goalsHighLimit, succesfulDribblesLowLimit, succesfulDribblesHighLimit, totalPassesLowLimit, totalPassesHighLimit)
  
         if len(similarPlayers) == 0:
             return "no similar players available"
@@ -292,7 +319,44 @@ def findSimilarPlayers(db: Session, season: int, stats: schemas.Playerstats):
 
         for player, playerStats in similarPlayers:
             print(player.name, playerStats.position)
-        #print(similarPlayers[0][0].name)
+        return similarPlayers
+    
+    elif stats.position == "Defender":
+        tacklesLowLimit = round(stats.tackles * 0.8)
+        tacklesHighLimit = round(stats.tackles * 1.2)
+        interceptionsLowLimit = round(stats.interceptions * 0.8)
+        interceptionsHighLimit = round(stats.interceptions * 1.2)
+        duelsWonLowLimit = round(stats.duelsWon * 0.8)
+        duelsWonHighLimit = round(stats.duelsWon * 1.2)
+        blocksLowLimit = round(stats.blocks * 0.8)
+        blocksHighLimit = round(stats.blocks * 1.2)
+
+        similarPlayers = crud.get_similar_players_defender(db, season, stats.playerID, stats.position, tacklesLowLimit, tacklesHighLimit,
+         interceptionsLowLimit, interceptionsHighLimit, duelsWonLowLimit, duelsWonHighLimit, blocksLowLimit, blocksHighLimit)
+ 
+        if len(similarPlayers) == 0:
+            return "no similar players available"
+
+
+        for player, playerStats in similarPlayers:
+            print(player.name, playerStats.position)
+        return similarPlayers
+    
+    elif stats.position == "Goalkeeper":
+        goalsConcededLowLimit = round(stats.goalsConceded * 0.8)
+        goalsConcededHighLimit = round(stats.goalsConceded * 1.2)
+        savesLowLimit = round(stats.saves * 0.8)
+        savesHighLimit = round(stats.saves * 1.2)
+
+        similarPlayers = crud.get_similar_players_goalkeeper(db, season, stats.playerID, stats.position, goalsConcededLowLimit, 
+        goalsConcededHighLimit, savesLowLimit, savesHighLimit)
+ 
+        if len(similarPlayers) == 0:
+            return "no similar players available"
+
+
+        for player, playerStats in similarPlayers:
+            print(player.name, playerStats.position)
         return similarPlayers
 
 

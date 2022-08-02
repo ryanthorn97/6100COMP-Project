@@ -16,7 +16,19 @@ def getPlayerSquads(teamId):
 
     player = response.json()
 
+
     return player['response']
+
+def getLeagueStandings(leagueId, season):
+
+    endpoint = "standings"
+    querystring = {"league":leagueId,"season":season}
+
+    response = requests.request("GET", url + endpoint, headers=headers, params=querystring)
+
+    players = response.json()
+
+    return players['response']
 
 
 
@@ -55,14 +67,4 @@ def getAllPlayerStatsInTeamBySeason(teamId, season, page):
 
     return players['response']
 
-def getLeagueStandings(leagueId, season):
-
-    endpoint = "standings"
-    querystring = {"league":leagueId,"season":season}
-
-    response = requests.request("GET", url + endpoint, headers=headers, params=querystring)
-
-    players = response.json()
-
-    return players['response']
 

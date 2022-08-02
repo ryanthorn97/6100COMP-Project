@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{title}}{% endblock %}
+{% block title %}{{data.name}}{% endblock %}
 {% block head %}
 {{ super() }}
 
@@ -13,23 +13,29 @@
     <div class="row">
         <div class="col"><h1>{{data.name}}</h1></div>
         <div class="col"><h1><img alt="Player Picture" src={{data.photo}}></h1></div>
+        <div class="col"><h1><img alt="Team Picture" src={{team.logo}}></h1></div>
         <div class="col">
             <h1>Rating</h1>
             <h3>{{score}}</h3>
+        </div>
+        <div class="col">
+            <h1>Value</h1>
+            <h3>£{{value}}</h3>
         </div>
     </div>
     <br><br>
     <form class="d-flex" action="/compareplayers">
         <input class="form-control me-2" id="autocomplete" name="query" type="search" placeholder="Compare" aria-label="Compare">
         <input type="hidden" name="player_id" value="{{data.playerID}}" />
-        <button class="btn btn-outline-success" type="submit">Compare Player</button>
-      </form>   
+        <button class="btn btn-info" type="submit">Compare Player</button>
+    </form>   
     <a href="http://localhost:8000/similarplayers/{{data.playerID}}"><button type="button" class="btn btn-info">Find Similar Players</button></a>
 
     <br><br><br><br>
     <div class="row">
         <div class="col">
             <br>
+            <h1><a href="http://localhost:8000/teampage/?team_id={{team.teamID}}">Team: {{team.name}}</a></h1>
             <h5>First Name: {{data.firstName}}</h5>
             <h5>Last Name: {{data.lastName}}</h5>
             <h5>Postition: {{stats.position}}</h5>
@@ -44,6 +50,11 @@
             <p>Injured: {{data.injured}}</p>
         </div>
         <div class="col">
+            <form class="d-flex" action="/playerpage/">
+                <input type="hidden" name="player_id" value="{{data.playerID}}" />
+                <input class="form-control me-2" id="autocomplete" name="season" type="search" placeholder="Choose Season" aria-label="Choose Season">
+                <button class="btn btn-info" type="submit">Choose Season</button>
+            </form>   
             <h1>Player Stats For Season {{stats.season}}</h1>
             <br>
             <p>Appearances: {{stats.appearances}}</p>

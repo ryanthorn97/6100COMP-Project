@@ -92,3 +92,53 @@ class Playerstats(BaseModel):
 
     class Config:
         orm_mode = True
+    
+class Teamstats(BaseModel):
+    teamStatsID : int
+    teamID : int
+    competitionID : int
+    season : int
+    avgGoalsAgAway : int
+    avgGoalsAgHome : int
+    avgGoalsAgTotal : int
+    avgGoalsForAway : int
+    avgGoalsForHome : int
+    avgGoalsForTotal : int
+    biggestGoalsForHome : int
+    biggestGoalsForAway : int
+    biggestGoalsAgHome : int
+    biggestGoalsAgAway : int
+    biggestLossAway : str
+    biggestLossHome : str
+    biggestDrawStreak : int
+    biggestWinStreak : int
+    biggestLoseStreak : int
+    biggestWinAway : str
+    biggestWinHome : str
+    yellowCards : int
+    redCards : int
+    homeCleanSheet : int
+    awayCleanSheet : int
+    totalCleanSheet : int
+    failedToScoreAway : int
+    failedToScoreHome : int
+    totalFailedToScore : int
+    drawsHome : int
+    drawsAway : int
+    drawsTotal : int
+    lossHome : int
+    lossAway : int
+    lossTotal : int
+    playedHome : int
+    playedAway : int
+    playedTotal : int
+    winsAway : int
+    winsHome : int
+    winsTotal : int
+    penaltyMissedPerc : str
+    penaltyMissedTotal : int
+    penaltyScoredPerc : str
+    penaltyScoredTotal : int 
+
+    class Config:
+        orm_mode = True

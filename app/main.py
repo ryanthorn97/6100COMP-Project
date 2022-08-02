@@ -4,7 +4,6 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.routers import players, teams, competitions
-from app.library import helpers
 
 app = FastAPI()
 
@@ -37,5 +36,4 @@ async def home(request: Request):
 
 #players.addAllPlayers(276)
 #players.getAllPlayerIDs()
-
-#print(helpers.num_sim(100, 89))
+#print(getPlayerStatsBySeason(276, 2021))

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{title}}{% endblock %}
+{% block title %}{{data.name}}{% endblock %}
 {% block head %}
 {{ super() }}
 
@@ -13,8 +13,10 @@
     <div class="row">
         <div class="col">
             <h1>{{data.name}}</h1>
+            <h2><a href="http://localhost:8000/competitionpage/?competition_id={{leagueDetails[2].competitionID}}">{{leagueDetails[2].name}}</a></h2>
+            <h4>Position - {{leagueDetails[1].rank}}</h4>
         </div>
-        <div class="col"><h1><img alt="Player Picture" src={{data.logo}}></h1></div>
+        <div class="col"><h1><img alt="Team Picture" src={{data.logo}}></h1></div>
         <div class="col">
             <h1>Rating</h1>
             <h3>{{teamScore}}</h3>
@@ -26,6 +28,13 @@
             <h1>Weakest Position</h1>
             <h3>{{weakestArea}}</h3>
         </div>
+        <div class="col">
+            <form class="d-flex" action="/compareteams">
+                <input class="form-control me-2" id="autocomplete" name="query" type="search" placeholder="Compare" aria-label="Compare">
+                <input type="hidden" name="team_id" value="{{data.teamID}}" />
+                <button class="btn btn-info" type="submit">Compare Team</button>
+              </form> 
+        </div>
     </div>
     <br><br><br><br>
     <div class="row">
@@ -33,12 +42,61 @@
             <h3>Players</h3>
             {% for player in players %}
                 <div class="col">	
-                    <a href="http://localhost:8000/playerpage/{{player[0].playerID}}">{{player[0].name}}</a>
+                    <a href="http://localhost:8000/playerpage/?player_id={{player[0].playerID}}">{{player[0].name}}</a>
                     {% if loop.index % 3 %}
                         <br>
                     {% endif %}
                 </div>
             {% endfor %}
+        </div>
+        <div class="col">
+            <form class="d-flex" action="/teampage/">
+                <input type="hidden" name="team_id" value="{{data.teamID}}" />
+                <input class="form-control me-2" id="autocomplete" name="season" type="search" placeholder="Choose Season" aria-label="Choose Season">
+                <button class="btn btn-info" type="submit">Choose Season</button>
+            </form>  
+            <h1>Team Stats For Season {{stats.season}}</h1>
+            <br>
+            <p>Avg Goals Against Away: {{stats.avgGoalsAgAway}}</p>
+            <p>Avg Goals Against Home: {{stats.avgGoalsAgHome}}</p>
+            <p>Avg Goals Against Total: {{stats.avgGoalsAgTotal}}</p>
+            <p>Avg Goals For Away: {{stats.avgGoalsForAway}}</p>
+            <p>Avg Goals For Home: {{stats.avgGoalsForHome}}</p>
+            <p>Avg Goals For Total: {{stats.avgGoalsForTotal}}</p>
+            <p>Biggest Goals For Home: {{stats.biggestGoalsForHome}}</p>
+            <p>Biggest Goals For Away: {{stats.biggestGoalsForAway}}</p>
+            <p>Biggest Goals Against Home: {{stats.biggestGoalsAgHome}}</p>
+            <p>Biggest Goals Against Away: {{stats.biggestGoalsAgAway}}</p>
+            <p>Biggest Loss Away: {{stats.biggestLossAway}}</p>
+            <p>Biggest Loss Home: {{stats.biggestLossHome}}</p>
+            <p>Biggest Draw Streak: {{stats.biggestDrawStreak}}</p>
+            <p>Biggest Win Streak: {{stats.biggestWinStreak}}</p>
+            <p>Biggest Loss Streak: {{stats.biggestLoseStreak}}</p>
+            <p>biggestWinAway: {{stats.biggestWinAway}}</p>
+            <p>biggestWinHome: {{stats.biggestWinHome}}</p>
+            <p>yellowCards: {{stats.yellowCards}}</p>
+            <p>redCards: {{stats.redCards}}</p>
+            <p>homeCleanSheet: {{stats.homeCleanSheet}}</p>
+            <p>awayCleanSheet: {{stats.awayCleanSheet}}</p>
+            <p>totalCleanSheet: {{stats.totalCleanSheet}}</p>
+            <p>failedToScoreAway: {{stats.yellowfailedToScoreAwayCards}}</p>
+            <p>failedToScoreHome: {{stats.failedToScoreHome}}</p>
+            <p>totalFailedToScore: {{stats.totalFailedToScore}}</p>
+            <p>drawsHome: {{stats.drawsHome}}</p>
+            <p>drawsAway: {{drawsAway}}</p>
+            <p>drawsTotal: {{stats.drawsTotal}}</p>
+            <p>lossHome: {{stats.lossHome}}</p>
+            <p>lossAway: {{stats.lossAway}}</p>
+            <p>lossTotal: {{stats.lossTotal}}</p>
+            <p>playedHome: {{stats.playedHome}}</p>
+            <p>playedAway: {{stats.playedAway}}</p>
+            <p>playedTotal: {{stats.playedTotal}}</p>
+            <p>winsAway: {{stats.winsAway}}</p>
+            <p>winsHome: {{stats.winsHome}}</p>
+            <p>winsTotal: {{stats.winsTotal}}</p>
+            <p>penaltyMissedTotal: {{stats.penaltyMissedTotal}}</p>
+            <p>penaltyScoredPerc: {{stats.penaltyScoredPerc}}</p>
+            <p>penaltyScoredTotal: {{stats.penaltyScoredTotal}}</p>
         </div>
     </div>
     <br><br><br><br>

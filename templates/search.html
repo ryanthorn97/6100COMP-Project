@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+{{ super() }}
+
+{% endblock %}
+
+{% block page_content %}
+{% include 'include/sidebar.html' %}
+
+<main role="main" class="container">
+    <div class="row">
+        <div class="col">
+            <h1>Search Results</h1>
+        </div>
+    </div>
+	<div class="row">
+		{% for player in players %}
+		<div class="col-md-4 mr-auto">	
+            <a href="http://localhost:8000/playerpage/?player_id={{player.playerID}}">{{player.name}}</a>
+			{% if loop.index % 3 %}
+				<br>
+			{% endif %}
+		</div>
+	{% endfor %}
+	</div>
+    
+	<div class="row">
+		{% for player in similarPlayers %}
+		<div class="col-md-4 mr-auto">	
+            <a href="http://localhost:8000/playerpage/?player_id={{player[0].playerID}}">{{player[0].name}}</a>
+			{% if loop.index % 3 %}
+				<br>
+			{% endif %}
+		</div>
+	{% endfor %}
+	</div>
+    
+	<div class="row">
+		{% for team in teams %}
+		<div class="col-md-4 mr-auto">	
+            <a href="http://localhost:8000/teampage/?team_id={{team.teamID}}">{{team.name}}</a>
+			{% if loop.index % 3 %}
+				<br>
+			{% endif %}
+		</div>
+	{% endfor %}
+	</div>
+	
+</main><!-- /.container -->
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+
+{% endblock %}
